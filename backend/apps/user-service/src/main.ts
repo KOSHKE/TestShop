@@ -1,8 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { UserServiceModule } from './user-service.module';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(UserServiceModule);
-  await app.listen(process.env.port ?? 3000);
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,         
+    forbidNonWhitelisted: true 
+  }));
+
+  const config = new DocumentBuilder()
+    .setTitle('User Service API')
+    .setDescription('API for user registration and management')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(process.env.port ?? 5000);
 }
 bootstrap();
