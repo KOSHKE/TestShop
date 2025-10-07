@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   frontend:
     build:
@@ -14,15 +12,19 @@ services:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
-      - backend
+      - user-service
 
-  backend:
+  user-service:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev 
-    container_name: testshop_backend
+      dockerfile: Dockerfile.dev
+    container_name: testshop_user_service
     env_file:
       - ./backend/.env
+    environment:
+      SERVICE: user-service
+      PORT: 5000
+    command: npm run start:user-service:dev
     ports:
       - "5000:5000"
     volumes:

@@ -2,12 +2,11 @@ FROM node:24-alpine
 
 WORKDIR /app
 
+# Install dependencies for the entire backend monorepo
 COPY package*.json ./
+RUN npm ci
 
-RUN npm install
-
+# Copy backend sources (including prisma and apps)
 COPY . .
 
-EXPOSE 5000
-
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:user-service:dev"]
