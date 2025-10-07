@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   frontend:
     build:
@@ -5,12 +7,29 @@ services:
       dockerfile: Dockerfile.dev
     container_name: testshop_frontend
     env_file:
-      - .env
+      - ./frontend/.env
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev 
+    container_name: testshop_backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - db
 
   db:
     image: postgres:16.5
