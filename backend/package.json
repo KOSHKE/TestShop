@@ -18,7 +18,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/backend/test/jest-e2e.json",
-    "start:user-service:dev": "nest start user-service --watch"
+    "start:user-service:dev": "nest start user-service --watch",
+    "start:inventory-service:dev": "nest start inventory-service --watch",
+    "start:api-gateway:dev": "nest start api-gateway --watch",
+    "db:seed": "prisma db seed",
+    "db:migrate:dev": "prisma migrate dev && npm run db:seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -86,5 +90,8 @@
     "roots": [
       "<rootDir>/apps/"
     ]
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seeds/seed.ts"
   }
 }
