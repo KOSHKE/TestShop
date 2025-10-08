@@ -1,36 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InventoryServiceController } from './inventory-service.controller';
 import { InventoryService } from './inventory-service.service';
+import { PRODUCT_REPOSITORY } from './repositories/product.repository.interface';
+import { ProductMapper } from './mappers/product.mapper';
 
 describe('InventoryServiceController', () => {
   let inventoryServiceController: InventoryServiceController;
-  let inventoryService: InventoryService;
 
   beforeEach(async () => {
-    const mockInventoryService = {
-      getAllProducts: jest.fn().mockResolvedValue([
+    const mockProductRepository = {
+      findAllWithStock: jest.fn().mockResolvedValue([
         {
-          id: 1,
+          id: 'product-uuid-1',
           name: 'Test Product',
           description: 'Test Description',
           price: 100,
-          inventory: [{ id: 1, quantity: 10, location: 'A1' }],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          stock: [
+            { 
+              id: 'stock-uuid-1', 
+              productId: 'product-uuid-1', 
+              quantity: 10, 
+              updatedAt: new Date() 
+            },
+          ],
         },
       ]),
+      findById: jest.fn(),
     };
 
     const app: TestingModule = await Test.createTestingModule({
       controllers: [InventoryServiceController],
       providers: [
+        InventoryService,
+        ProductMapper,
         {
-          provide: InventoryService,
-          useValue: mockInventoryService,
+          provide: PRODUCT_REPOSITORY,
+          useValue: mockProductRepository,
         },
       ],
     }).compile();
 
     inventoryServiceController = app.get<InventoryServiceController>(InventoryServiceController);
-    inventoryService = app.get<InventoryService>(InventoryService);
   });
 
   describe('getAllProducts', () => {
@@ -39,14 +51,16 @@ describe('InventoryServiceController', () => {
       
       expect(result).toEqual([
         {
-          id: 1,
+          id: 'product-uuid-1',
           name: 'Test Product',
           description: 'Test Description',
           price: 100,
-          inventory: [{ id: 1, quantity: 10, location: 'A1' }],
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+          totalStock: 10,
+          stockDetails: expect.any(Array),
         },
       ]);
-      expect(inventoryService.getAllProducts).toHaveBeenCalled();
     });
   });
 });

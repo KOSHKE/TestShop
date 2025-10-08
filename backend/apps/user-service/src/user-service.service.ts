@@ -1,23 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import * as bcrypt from 'bcryptjs';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import type { IUserRepository } from './repositories/user.repository.interface';
+import { USER_REPOSITORY } from './repositories/user.repository.interface';
+import { UserEntity } from './entities/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
+  ) {}
 
-  async registerUser(dto: CreateUserDto) {
-    const { email, password, name } = dto;
+  async registerUser(dto: CreateUserDto): Promise<UserEntity> {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    
+    const user = await this.userRepository.create(
+      dto.email,
+      hashedPassword,
+      dto.name,
+    );
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    return this.prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
+    // Don't return password in response
+    return new UserEntity({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      createdAt: user.createdAt,
     });
   }
 }

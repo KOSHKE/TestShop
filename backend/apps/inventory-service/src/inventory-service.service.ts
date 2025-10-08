@@ -1,29 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { Inject, Injectable } from '@nestjs/common';
+import type { IProductRepository } from './repositories/product.repository.interface';
+import { PRODUCT_REPOSITORY } from './repositories/product.repository.interface';
+import { ProductMapper } from './mappers/product.mapper';
+import { ProductResponseDto } from './dto/product-response.dto';
 
 @Injectable()
 export class InventoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepository: IProductRepository,
+    private readonly productMapper: ProductMapper,
+  ) {}
 
-  async getAllProducts() {
-    const products = await this.prisma.product.findMany({
-      include: {
-        stock: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-      totalStock: product.stock.reduce((sum, s) => sum + s.quantity, 0),
-      stockDetails: product.stock,
-    }));
+  async getAllProducts(): Promise<ProductResponseDto[]> {
+    const products = await this.productRepository.findAllWithStock();
+    return this.productMapper.toResponseDtoList(products);
   }
 }
