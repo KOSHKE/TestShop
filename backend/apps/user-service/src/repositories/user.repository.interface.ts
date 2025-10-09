@@ -1,4 +1,4 @@
-import type { User } from '../../../../generated/prisma';
+import type { User } from '../../../../../libs/generated/user-prisma';
 
 export interface IUserRepository {
   create(email: string, hashedPassword: string, name?: string): Promise<User>;

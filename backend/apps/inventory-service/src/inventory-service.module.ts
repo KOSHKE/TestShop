@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { GlobalExceptionFilter, MetricsService, InventoryPrismaService } from '@app/shared';
 import { InventoryServiceController } from './inventory-service.controller';
 import { InventoryService } from './inventory-service.service';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { PRODUCT_REPOSITORY } from './repositories/product.repository.interface';
 import { PrismaProductRepository } from './repositories/prisma-product.repository';
 import { ProductMapper } from './mappers/product.mapper';
@@ -20,8 +20,9 @@ import { ProductMapper } from './mappers/product.mapper';
   controllers: [InventoryServiceController],
   providers: [
     InventoryService,
-    PrismaService,
+    InventoryPrismaService,
     ProductMapper,
+    MetricsService,
     {
       provide: PRODUCT_REPOSITORY,
       useClass: PrismaProductRepository,
@@ -29,6 +30,10 @@ import { ProductMapper } from './mappers/product.mapper';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })

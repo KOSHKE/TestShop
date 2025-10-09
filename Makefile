@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell db-migrate db-seed db-reset restart clean
+.PHONY: help up down build logs shell db-generate db-migrate db-seed db-setup db-reset restart clean
 
 # Default target
 help:
@@ -7,10 +7,15 @@ help:
 	@echo "  make down            - Stop all services"
 	@echo "  make build           - Build all services"
 	@echo "  make logs            - Show logs (add service=<name> for specific service)"
-	@echo "  make shell           - Open shell in service (add service=<name>)"
-	@echo "  make db-migrate      - Run database migrations"
-	@echo "  make db-seed         - Seed database with test data"
-	@echo "  make db-reset        - Reset database (migrate + seed)"
+	@echo "  make shell           - Open shell in backend container"
+	@echo ""
+	@echo "Database commands:"
+	@echo "  make db-generate     - Generate Prisma clients for all services"
+	@echo "  make db-migrate      - Run migrations for all databases"
+	@echo "  make db-seed         - Seed all databases with test data"
+	@echo "  make db-setup        - Complete setup (generate + migrate + seed)"
+	@echo "  make db-reset        - Reset all databases"
+	@echo ""
 	@echo "  make restart         - Restart service (add service=<name>)"
 	@echo "  make clean           - Remove all containers, volumes, and images"
 
@@ -32,11 +37,7 @@ else
 endif
 
 shell:
-ifdef service
-	docker compose -f docker-compose.dev.yml exec $(service) sh
-else
-	docker compose -f docker-compose.dev.yml exec api-gateway sh
-endif
+	docker compose -f docker-compose.dev.yml exec backend sh
 
 restart:
 ifdef service
@@ -45,18 +46,36 @@ else
 	docker compose -f docker-compose.dev.yml restart
 endif
 
-# Database commands
+# Database commands (all services at once)
+db-generate:
+	@echo "🔧 Generating Prisma clients for all services..."
+	docker compose -f docker-compose.dev.yml exec backend npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+	docker compose -f docker-compose.dev.yml exec backend npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
+	@echo "✅ Prisma clients generated!"
+
 db-migrate:
-	docker compose -f docker-compose.dev.yml exec user-service npx prisma migrate dev
+	@echo "📦 Running migrations for all databases..."
+	docker compose -f docker-compose.dev.yml exec backend npx prisma migrate dev --schema=apps/user-service/prisma/schema.prisma --name auto
+	docker compose -f docker-compose.dev.yml exec backend npx prisma migrate dev --schema=apps/inventory-service/prisma/schema.prisma --name auto
+	@echo "✅ Migrations completed!"
 
 db-seed:
-	docker compose -f docker-compose.dev.yml exec user-service npm run db:seed
+	@echo "🌱 Seeding databases..."
+	docker compose -f docker-compose.dev.yml exec backend ts-node apps/inventory-service/prisma/seeds/seed.ts
+	@echo "✅ Databases seeded!"
+
+db-setup:
+	@echo "🚀 Setting up all databases (generate + migrate + seed)..."
+	@make db-generate
+	@make db-migrate
+	@make db-seed
+	@echo "✅ Database setup complete!"
 
 db-reset:
-	docker compose -f docker-compose.dev.yml exec user-service npx prisma migrate reset --force
-
-db-generate:
-	docker compose -f docker-compose.dev.yml exec user-service npx prisma generate
+	@echo "⚠️  Resetting all databases..."
+	docker compose -f docker-compose.dev.yml exec backend npx prisma migrate reset --schema=apps/user-service/prisma/schema.prisma --force
+	docker compose -f docker-compose.dev.yml exec backend npx prisma migrate reset --schema=apps/inventory-service/prisma/schema.prisma --force
+	@echo "✅ Databases reset!"
 
 # Cleanup
 clean:

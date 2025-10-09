@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { GlobalExceptionFilter, MetricsService, UserPrismaService } from '@app/shared';
 import { UserServiceController } from './user-service.controller';
 import { UserService } from './user-service.service';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { USER_REPOSITORY } from './repositories/user.repository.interface';
 import { PrismaUserRepository } from './repositories/prisma-user.repository';
 
@@ -19,7 +19,8 @@ import { PrismaUserRepository } from './repositories/prisma-user.repository';
   controllers: [UserServiceController],
   providers: [
     UserService,
-    PrismaService,
+    UserPrismaService,
+    MetricsService,
     {
       provide: USER_REPOSITORY,
       useClass: PrismaUserRepository,
@@ -27,6 +28,10 @@ import { PrismaUserRepository } from './repositories/prisma-user.repository';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })

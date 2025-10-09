@@ -1,4 +1,4 @@
-import { Stock } from '../../../../generated/prisma';
+import { Stock } from '../../../../../libs/generated/inventory-prisma';
 
 export class ProductResponseDto {
   id: string;

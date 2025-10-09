@@ -1,4 +1,4 @@
-import type { Product, Stock } from '../../../../generated/prisma';
+import type { Product, Stock } from '../../../../../libs/generated/inventory-prisma';
 
 export interface ProductWithStock extends Product {
   stock: Stock[];

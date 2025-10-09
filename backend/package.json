@@ -21,8 +21,13 @@
     "start:user-service:dev": "nest start user-service --watch",
     "start:inventory-service:dev": "nest start inventory-service --watch",
     "start:api-gateway:dev": "nest start api-gateway --watch",
-    "db:seed": "prisma db seed",
-    "db:migrate:dev": "prisma migrate dev && npm run db:seed"
+    "prisma:generate": "npm run prisma:generate:user && npm run prisma:generate:inventory",
+    "prisma:generate:user": "prisma generate --schema=apps/user-service/prisma/schema.prisma",
+    "prisma:generate:inventory": "prisma generate --schema=apps/inventory-service/prisma/schema.prisma",
+    "prisma:migrate:user": "prisma migrate dev --schema=apps/user-service/prisma/schema.prisma",
+    "prisma:migrate:inventory": "prisma migrate dev --schema=apps/inventory-service/prisma/schema.prisma",
+    "prisma:seed:inventory": "ts-node apps/inventory-service/prisma/seeds/seed.ts",
+    "db:setup": "npm run prisma:migrate:user && npm run prisma:migrate:inventory && npm run prisma:seed:inventory"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -89,8 +94,12 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/apps/"
-    ]
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+    }
   },
   "prisma": {
     "seed": "ts-node prisma/seeds/seed.ts"
