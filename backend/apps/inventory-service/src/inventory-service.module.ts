@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { InventoryServiceController } from './inventory-service.controller';
 import { InventoryService } from './inventory-service.service';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -7,7 +9,14 @@ import { PrismaProductRepository } from './repositories/prisma-product.repositor
 import { ProductMapper } from './mappers/product.mapper';
 
 @Module({
-  imports: [],
+  imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 60 seconds
+        limit: 50, // 50 requests per ttl (internal service)
+      },
+    ]),
+  ],
   controllers: [InventoryServiceController],
   providers: [
     InventoryService,
@@ -16,6 +25,10 @@ import { ProductMapper } from './mappers/product.mapper';
     {
       provide: PRODUCT_REPOSITORY,
       useClass: PrismaProductRepository,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
