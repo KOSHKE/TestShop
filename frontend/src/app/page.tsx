@@ -22,6 +22,8 @@ export default function Home() {
     infrastructure: [
       { name: 'Docker', description: 'Containerization' },
       { name: 'Docker Compose', description: 'Multi-container orchestration' },
+      { name: 'Prometheus', description: 'Metrics collection - localhost:9090' },
+      { name: 'Grafana', description: 'Monitoring dashboards - localhost:3001' },
     ],
   };
 
@@ -49,7 +51,10 @@ export default function Home() {
           <p>Frontend (Next.js) → API Gateway (4000)</p>
           <p className="ml-8">├── User Service (5000)</p>
           <p className="ml-8">└── Inventory Service (5001)</p>
-          <p className="ml-16">└── PostgreSQL Database</p>
+          <p className="ml-16">└── PostgreSQL Database (5432)</p>
+          <p className="mt-4">Monitoring Stack:</p>
+          <p className="ml-4">├── Prometheus (9090) ← scrapes metrics from all services</p>
+          <p className="ml-4">└── Grafana (3001) ← visualizes metrics from Prometheus</p>
         </div>
       </div>
     </div>

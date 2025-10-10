@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { Counter, Histogram } from 'prom-client';
 
 /**
- * Metrics service stub for future Prometheus/Grafana integration
- * 
- * TODO: Implement Prometheus client integration
- * - npm install prom-client
- * - Create counters, histograms, gauges
- * - Expose /metrics endpoint
- * - Configure Grafana dashboards
+ * Metrics service for Prometheus/Grafana integration
+ * Tracks HTTP requests, errors, and response times
  */
 @Injectable()
 export class MetricsService {
+  constructor(
+    @InjectMetric('http_requests_total')
+    private readonly requestCounter: Counter<string>,
+    @InjectMetric('http_errors_total')
+    private readonly errorCounter: Counter<string>,
+    @InjectMetric('http_request_duration_seconds')
+    private readonly requestDurationHistogram: Histogram<string>,
+  ) {}
 
   /**
    * Increment error counter
-   * TODO: Implement with prometheus Counter
    */
   incrementErrorCounter(data: {
     method: string;
@@ -22,18 +26,16 @@ export class MetricsService {
     statusCode: number;
     service: string;
   }): void {
-    // TODO: Implement
-    // this.errorCounter.inc({
-    //   method: data.method,
-    //   path: data.path,
-    //   status_code: data.statusCode,
-    //   service: data.service,
-    // });
+    this.errorCounter.inc({
+      method: data.method,
+      path: data.path,
+      status_code: data.statusCode.toString(),
+      service: data.service,
+    });
   }
 
   /**
    * Record request duration
-   * TODO: Implement with prometheus Histogram
    */
   recordRequestDuration(data: {
     method: string;
@@ -41,20 +43,18 @@ export class MetricsService {
     duration: number;
     service: string;
   }): void {
-    // TODO: Implement
-    // this.requestDurationHistogram.observe(
-    //   {
-    //     method: data.method,
-    //     path: data.path,
-    //     service: data.service,
-    //   },
-    //   data.duration / 1000, // convert to seconds
-    // );
+    this.requestDurationHistogram.observe(
+      {
+        method: data.method,
+        path: data.path,
+        service: data.service,
+      },
+      data.duration / 1000, // convert to seconds
+    );
   }
 
   /**
    * Increment request counter
-   * TODO: Implement with prometheus Counter
    */
   incrementRequestCounter(data: {
     method: string;
@@ -62,22 +62,12 @@ export class MetricsService {
     statusCode: number;
     service: string;
   }): void {
-    // TODO: Implement
-    // this.requestCounter.inc({
-    //   method: data.method,
-    //   path: data.path,
-    //   status_code: data.statusCode,
-    //   service: data.service,
-    // });
-  }
-
-  /**
-   * Set gauge value (e.g., active connections, queue size)
-   * TODO: Implement with prometheus Gauge
-   */
-  setGaugeValue(name: string, value: number, labels?: Record<string, string>): void {
-    // TODO: Implement
-    // this.gauges[name].set(labels || {}, value);
+    this.requestCounter.inc({
+      method: data.method,
+      path: data.path,
+      status_code: data.statusCode.toString(),
+      service: data.service,
+    });
   }
 }
 
