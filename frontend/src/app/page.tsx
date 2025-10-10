@@ -11,6 +11,9 @@ export default function Home() {
       { name: 'API Gateway', description: 'Unified entry point for microservices' },
       { name: 'Microservices', description: 'User & Inventory services' },
       { name: 'Swagger', description: 'Auto-generated API documentation' },
+      { name: 'Guards', description: 'Rate limiting & request throttling' },
+      { name: 'Interceptors', description: 'Request metrics & monitoring' },
+      { name: 'Exception Filters', description: 'Global error handling & metrics' },
     ],
     database: [
       { name: 'PostgreSQL 16', description: 'Relational database' },

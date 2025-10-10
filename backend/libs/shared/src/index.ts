@@ -1,6 +1,9 @@
 // Filters
 export * from './filters';
 
+// Interceptors
+export * from './interceptors';
+
 // Services
 export * from './services';
 

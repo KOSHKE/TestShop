@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 /**
  * Metrics service stub for future Prometheus/Grafana integration
@@ -11,7 +11,6 @@ import { Injectable, Logger } from '@nestjs/common';
  */
 @Injectable()
 export class MetricsService {
-  private readonly logger = new Logger(MetricsService.name);
 
   /**
    * Increment error counter
@@ -23,11 +22,6 @@ export class MetricsService {
     statusCode: number;
     service: string;
   }): void {
-    // Stub implementation - just log for now
-    this.logger.debug(
-      `[METRICS STUB] Error counter: ${data.service} - ${data.method} ${data.path} - ${data.statusCode}`,
-    );
-
     // TODO: Implement
     // this.errorCounter.inc({
     //   method: data.method,
@@ -47,10 +41,6 @@ export class MetricsService {
     duration: number;
     service: string;
   }): void {
-    this.logger.debug(
-      `[METRICS STUB] Request duration: ${data.service} - ${data.method} ${data.path} - ${data.duration}ms`,
-    );
-
     // TODO: Implement
     // this.requestDurationHistogram.observe(
     //   {
@@ -72,10 +62,6 @@ export class MetricsService {
     statusCode: number;
     service: string;
   }): void {
-    this.logger.debug(
-      `[METRICS STUB] Request counter: ${data.service} - ${data.method} ${data.path} - ${data.statusCode}`,
-    );
-
     // TODO: Implement
     // this.requestCounter.inc({
     //   method: data.method,
@@ -90,10 +76,6 @@ export class MetricsService {
    * TODO: Implement with prometheus Gauge
    */
   setGaugeValue(name: string, value: number, labels?: Record<string, string>): void {
-    this.logger.debug(
-      `[METRICS STUB] Gauge: ${name} = ${value} ${labels ? JSON.stringify(labels) : ''}`,
-    );
-
     // TODO: Implement
     // this.gauges[name].set(labels || {}, value);
   }

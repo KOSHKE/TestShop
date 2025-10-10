@@ -4,13 +4,13 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { MetricsService } from '../services/metrics.service';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(GlobalExceptionFilter.name);
+  constructor(private readonly metricsService: MetricsService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -38,19 +38,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }),
     };
 
-    // Log error
-    this.logger.error(
-      `${request.method} ${request.url} - ${status} - ${message}`,
-      exception instanceof Error ? exception.stack : undefined,
-    );
-
-    // TODO: Send metrics to Prometheus
-    // this.metricsService.incrementErrorCounter({
-    //   method: request.method,
-    //   path: request.url,
-    //   statusCode: status,
-    //   service: process.env.SERVICE_NAME || 'unknown',
-    // });
+    // Send metrics to Prometheus
+    this.metricsService.incrementErrorCounter({
+      method: request.method,
+      path: request.url,
+      statusCode: status,
+      service: process.env.SERVICE_NAME || 'unknown',
+    });
 
     response.status(status).json(errorResponse);
   }
