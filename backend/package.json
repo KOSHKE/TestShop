@@ -102,8 +102,5 @@
     "moduleNameMapper": {
       "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
     }
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seeds/seed.ts"
   }
 }

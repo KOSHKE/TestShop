@@ -1,16 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { ProxyService } from './proxy.service';
+import { ProductsService } from './products.service';
 
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly proxyService: ProxyService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all products with stock information' })
   async getAllProducts() {
-    return this.proxyService.proxyRequest('products', 'products', 'GET');
+    return this.productsService.getAllProducts();
   }
 }
 

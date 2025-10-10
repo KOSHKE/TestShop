@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { InventoryServiceController } from './inventory-service.controller';
-import { InventoryService } from './inventory-service.service';
+import { ProductsController } from './products.controller';
+import { ProductsService } from './products.service';
 import { PRODUCT_REPOSITORY } from './repositories/product.repository.interface';
 import { ProductMapper } from './mappers/product.mapper';
 
-describe('InventoryServiceController', () => {
-  let inventoryServiceController: InventoryServiceController;
+describe('ProductsController', () => {
+  let productsController: ProductsController;
 
   beforeEach(async () => {
     const mockProductRepository = {
@@ -31,9 +31,9 @@ describe('InventoryServiceController', () => {
     };
 
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [InventoryServiceController],
+      controllers: [ProductsController],
       providers: [
-        InventoryService,
+        ProductsService,
         ProductMapper,
         {
           provide: PRODUCT_REPOSITORY,
@@ -42,12 +42,12 @@ describe('InventoryServiceController', () => {
       ],
     }).compile();
 
-    inventoryServiceController = app.get<InventoryServiceController>(InventoryServiceController);
+    productsController = app.get<ProductsController>(ProductsController);
   });
 
   describe('getAllProducts', () => {
     it('should return an array of products with inventory', async () => {
-      const result = await inventoryServiceController.getAllProducts();
+      const result = await productsController.getAllProducts();
       
       expect(result).toEqual([
         {
@@ -64,3 +64,4 @@ describe('InventoryServiceController', () => {
     });
   });
 });
+

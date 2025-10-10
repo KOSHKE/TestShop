@@ -5,7 +5,7 @@ import { ProductMapper } from './mappers/product.mapper';
 import { ProductResponseDto } from './dto/product-response.dto';
 
 @Injectable()
-export class InventoryService {
+export class ProductsService {
   constructor(
     @Inject(PRODUCT_REPOSITORY)
     private readonly productRepository: IProductRepository,
@@ -17,3 +17,4 @@ export class InventoryService {
     return this.productMapper.toResponseDtoList(products);
   }
 }
+

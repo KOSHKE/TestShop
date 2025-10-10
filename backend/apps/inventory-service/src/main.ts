@@ -26,6 +26,7 @@ async function bootstrap() {
     .setDescription('API for product inventory and stock management')
     .setVersion('1.0')
     .addTag('products')
+    .addTag('stock')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

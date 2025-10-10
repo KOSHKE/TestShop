@@ -65,7 +65,7 @@ db-migrate:
 
 db-seed:
 	@echo "🌱 Seeding databases..."
-	docker compose -f docker-compose.dev.yml exec inventory-service ts-node apps/inventory-service/prisma/seeds/seed.ts
+	docker compose -f docker-compose.dev.yml exec inventory-service npm run prisma:seed:inventory
 	@echo "✅ Databases seeded!"
 
 db-setup:
