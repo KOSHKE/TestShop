@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProxyService {
-  private readonly services = {
-    users: process.env.USER_SERVICE_URL || 'http://user-service:5000',
-    products: process.env.INVENTORY_SERVICE_URL || 'http://inventory-service:5001',
+  private readonly services: {
+    users: string;
+    products: string;
   };
+
+  constructor(private readonly configService: ConfigService) {
+    this.services = {
+      users: this.configService.getOrThrow<string>('services.userService'),
+      products: this.configService.getOrThrow<string>('services.inventoryService'),
+    };
+  }
 
   async proxyRequest(
     serviceName: 'users' | 'products',

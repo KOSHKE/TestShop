@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ApiGatewayModule } from './api-gateway.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SwaggerModule } from '@nestjs/swagger';
 import { SwaggerAggregatorService } from './swagger-aggregator.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
+  const configService = app.get(ConfigService);
 
   app.enableCors();
 
@@ -20,10 +22,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT;
-  if (!port) {
-    throw new Error('PORT environment variable is required');
-  }
+  const port = configService.getOrThrow<number>('port');
 
   const swaggerAggregator = app.get(SwaggerAggregatorService);
   let aggregatedDocument = await swaggerAggregator.aggregateSwaggerDocs();
@@ -46,7 +45,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, aggregatedDocument);
 
-  await app.listen(Number(port));
+  await app.listen(port);
 
   console.log(`🚀 API Gateway is running on http://localhost:${port}`);
   console.log(`📚 Swagger docs: http://localhost:${port}/api`);

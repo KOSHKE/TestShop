@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { InventoryServiceModule } from './inventory-service.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(InventoryServiceModule);
+  const configService = app.get(ConfigService);
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -33,12 +35,9 @@ async function bootstrap() {
     res.json(document);
   });
 
-  const port = process.env.PORT;
-  if (!port) {
-    throw new Error('PORT environment variable is required');
-  }
+  const port = configService.getOrThrow<number>('port');
 
-  await app.listen(Number(port));
+  await app.listen(port);
 
   console.log(`🚀 Inventory Service is running on http://localhost:${port}`);
   console.log(`📚 Swagger docs available at http://localhost:${port}/api`);

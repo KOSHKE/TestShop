@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SwaggerAggregatorService {
-  private readonly services = [
-    {
-      name: 'user-service',
-      url: process.env.USER_SERVICE_URL || 'http://user-service:5000',
-    },
-    {
-      name: 'inventory-service',
-      url: process.env.INVENTORY_SERVICE_URL || 'http://inventory-service:5001',
-    },
-  ];
+  private readonly services: Array<{ name: string; url: string }>;
+
+  constructor(private readonly configService: ConfigService) {
+    this.services = [
+      {
+        name: 'user-service',
+        url: this.configService.getOrThrow<string>('services.userService'),
+      },
+      {
+        name: 'inventory-service',
+        url: this.configService.getOrThrow<string>('services.inventoryService'),
+      },
+    ];
+  }
 
   async aggregateSwaggerDocs(): Promise<any> {
     const aggregatedDoc: any = {
