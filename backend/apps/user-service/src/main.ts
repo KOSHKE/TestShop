@@ -23,9 +23,10 @@ async function bootstrap() {
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('User Service API')
-    .setDescription('API for user registration and management')
+    .setDescription('API for user registration and authentication')
     .setVersion('1.0')
     .addTag('users')
+    .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

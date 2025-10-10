@@ -6,7 +6,7 @@ import { UserEntity } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
@@ -30,3 +30,4 @@ export class UserService {
     });
   }
 }
+

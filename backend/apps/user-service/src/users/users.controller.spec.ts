@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserServiceController } from './user-service.controller';
-import { UserService } from './user-service.service';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 import { USER_REPOSITORY } from './repositories/user.repository.interface';
 
-describe('UserServiceController', () => {
-  let userServiceController: UserServiceController;
+describe('UsersController', () => {
+  let usersController: UsersController;
 
   beforeEach(async () => {
     const mockUserRepository = {
@@ -20,9 +20,9 @@ describe('UserServiceController', () => {
     };
 
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [UserServiceController],
+      controllers: [UsersController],
       providers: [
-        UserService,
+        UsersService,
         {
           provide: USER_REPOSITORY,
           useValue: mockUserRepository,
@@ -30,7 +30,7 @@ describe('UserServiceController', () => {
       ],
     }).compile();
 
-    userServiceController = app.get<UserServiceController>(UserServiceController);
+    usersController = app.get<UsersController>(UsersController);
   });
 
   describe('register', () => {
@@ -41,7 +41,7 @@ describe('UserServiceController', () => {
         name: 'Test User',
       };
 
-      const result = await userServiceController.register(dto);
+      const result = await usersController.register(dto);
       
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('email', 'test@example.com');
@@ -51,3 +51,4 @@ describe('UserServiceController', () => {
     });
   });
 });
+
