@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { 
   PrometheusMetricsModule,
   GlobalExceptionFilter,
-  MetricsInterceptor,
 } from '@app/shared';
 import { ProductsModule } from './products/products.module';
 import { StockModule } from './stock/stock.module';
@@ -31,7 +30,7 @@ import { validationSchema } from './config/validation.schema';
         limit: 50, // 50 requests per ttl (internal service)
       },
     ]),
-    // Prometheus Metrics
+    // Prometheus Metrics (for /metrics endpoint and error tracking)
     PrometheusMetricsModule,
     // Feature Modules
     ProductsModule,
@@ -41,10 +40,6 @@ import { validationSchema } from './config/validation.schema';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: MetricsInterceptor,
     },
     {
       provide: APP_FILTER,
