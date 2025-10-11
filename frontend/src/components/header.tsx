@@ -10,13 +10,13 @@ export function Header() {
               href="/" 
               className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent hover:from-blue-600 hover:to-slate-900 dark:hover:from-blue-400 dark:hover:to-white transition-all duration-300"
             >
-              TestShop
+              Shop
             </Link>
 
             <nav className="hidden md:flex gap-1">
               <Link
                 href="/products"
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all duration-200"
               >
                 Products
               </Link>
@@ -24,12 +24,12 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200">
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
               Sign In
-            </button>
-            <button className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
-              Get Started
-            </button>
+            </Link>
           </div>
         </div>
       </div>
