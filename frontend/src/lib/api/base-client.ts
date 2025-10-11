@@ -21,19 +21,53 @@ export class BaseApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
+    // Get JWT token from localStorage
+    const token = typeof window !== 'undefined' 
+      ? localStorage.getItem('accessToken') 
+      : null;
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+    // Add Authorization header if token exists
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options?.headers as Record<string, string>),
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
-    return response.json();
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
+      if (!response.ok) {
+        // Try to get detailed error message from server
+        let errorMessage = `API Error ${response.status}: ${response.statusText}`;
+        
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If JSON parsing fails, use default message
+        }
+
+        const error = new Error(errorMessage);
+        (error as any).status = response.status;
+        throw error;
+      }
+
+      return response.json();
+    } catch (error) {
+      // Re-throw network or other errors
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error');
+    }
   }
 
   protected async get<T>(endpoint: string): Promise<T> {

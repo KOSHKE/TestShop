@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -36,6 +37,7 @@ import { validationSchema } from './config/validation.schema';
     // Prometheus Metrics
     PrometheusMetricsModule,
     // Proxy Modules
+    AuthModule,
     UsersModule,
     ProductsModule,
   ],

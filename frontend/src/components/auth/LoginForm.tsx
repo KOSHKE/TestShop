@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import { api } from '@/lib/api';
 import Link from 'next/link';
 
 /**
@@ -10,6 +12,8 @@ import Link from 'next/link';
  * Handles user login with validation
  */
 export function LoginForm() {
+  const [serverError, setServerError] = useState<string>('');
+
   const {
     register,
     handleSubmit,
@@ -20,16 +24,45 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // TODO: Call API
-      console.log('Login:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
+      setServerError('');
+      const { rememberMe, ...loginData } = data;
+      const response = await api.auth.login(loginData);
+      
+      // Store token
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
+      // Redirect to home
+      window.location.href = '/';
+    } catch (error: any) {
       console.error('Login failed:', error);
+      
+      // Show user-friendly error message based on status code
+      if (error.status === 401) {
+        setServerError('Invalid email or password');
+      } else if (error.status === 429) {
+        setServerError('Too many attempts. Please try again later');
+      } else if (error.message?.includes('Network') || error.message?.includes('fetch')) {
+        setServerError('Network error. Please check your connection');
+      } else if (error.message) {
+        setServerError(error.message);
+      } else {
+        setServerError('Login failed. Please try again');
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {/* Server Error */}
+      {serverError && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-sm text-red-600 dark:text-red-400">{serverError}</p>
+        </div>
+      )}
+
       {/* Email */}
       <div>
         <label

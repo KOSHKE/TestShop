@@ -12,6 +12,9 @@ export class UsersService {
     private readonly userRepository: IUserRepository,
   ) {}
 
+  /**
+   * Register a new user
+   */
   async registerUser(dto: CreateUserDto): Promise<UserEntity> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     
@@ -28,6 +31,14 @@ export class UsersService {
       name: user.name,
       createdAt: user.createdAt,
     });
+  }
+
+  /**
+   * Find user by email (for authentication)
+   * Returns user with password for validation
+   */
+  async findByEmail(email: string): Promise<any> {
+    return this.userRepository.findByEmail(email);
   }
 }
 

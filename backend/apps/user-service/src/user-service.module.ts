@@ -8,6 +8,7 @@ import {
 } from '@app/shared';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 
@@ -40,6 +41,10 @@ import { validationSchema } from './config/validation.schema';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard, // Global JWT authentication
     },
     {
       provide: APP_FILTER,
