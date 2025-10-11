@@ -15,11 +15,28 @@ import { MetricsService } from '../services/metrics.service';
  */
 @Injectable()
 export class MetricsInterceptor implements NestInterceptor {
+  // Technical endpoints that should be excluded from metrics
+  private readonly EXCLUDED_PATHS = ['/metrics', '/health', '/favicon.ico'];
+
   constructor(private readonly metricsService: MetricsService) {}
+
+  /**
+   * Check if the path should be excluded from metrics collection
+   */
+  private shouldExcludeFromMetrics(path: string): boolean {
+    return this.EXCLUDED_PATHS.some((excludedPath) =>
+      path.startsWith(excludedPath),
+    );
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const startTime = Date.now();
+
+    // Skip metrics collection for technical endpoints
+    if (this.shouldExcludeFromMetrics(request.url)) {
+      return next.handle();
+    }
 
     return next.handle().pipe(
       tap({
