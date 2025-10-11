@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { ProxyService } from '../proxy.service';
+import { ProxyService } from '../proxy/proxy.service';
 
 @ApiTags('products')
 @Controller('products')
@@ -10,7 +10,7 @@ export class ProductsController {
   @Get()
   @ApiOperation({ summary: 'Get all products with stock information' })
   async getAllProducts() {
-    return this.proxyService.proxyRequest('products', 'products', 'GET');
+    return this.proxyService.forwardRequest('products', 'products', 'GET');
   }
 }
 

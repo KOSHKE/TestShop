@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ProxyService } from '../proxy.service';
+import { ProxyService } from '../proxy/proxy.service';
 
 /**
  * UsersController (API Gateway)

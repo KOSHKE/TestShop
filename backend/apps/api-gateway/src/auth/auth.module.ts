@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { ProxyService } from '../proxy.service';
+import { ProxyModule } from '../proxy/proxy.module';
 
 /**
  * AuthModule (API Gateway)
  * Handles authentication routing
  */
 @Module({
+  imports: [ProxyModule],
   controllers: [AuthController],
-  providers: [ProxyService],
 })
 export class AuthModule {}
 

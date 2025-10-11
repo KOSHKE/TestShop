@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
-export class SwaggerAggregatorService {
+export class SwaggerService {
   private readonly services: Array<{ name: string; url: string }>;
+  private cachedDocs: any = null;
+  private cacheTimestamp: number = 0;
+  private readonly CACHE_TTL_MS = 60000; // 60 seconds
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {
     this.services = [
       {
         name: 'user-service',
@@ -19,6 +27,12 @@ export class SwaggerAggregatorService {
   }
 
   async aggregateSwaggerDocs(): Promise<any> {
+    // Check cache
+    const now = Date.now();
+    if (this.cachedDocs && now - this.cacheTimestamp < this.CACHE_TTL_MS) {
+      return this.cachedDocs;
+    }
+
     const aggregatedDoc: any = {
       openapi: '3.0.0',
       info: {
@@ -48,18 +62,23 @@ export class SwaggerAggregatorService {
 
     for (const service of this.services) {
       try {
-        const response = await fetch(`${service.url}/api-json`);
+        const response = await lastValueFrom(
+          this.httpService.get(`${service.url}/api-json`, {
+            timeout: 5000,
+          }),
+        );
 
-        if (!response.ok) {
-          continue;
-        }
+        const serviceDoc = response.data;
 
-        const serviceDoc = await response.json();
-
+        // Add service paths with prefix to avoid collisions
         if (serviceDoc.paths) {
-          Object.assign(aggregatedDoc.paths, serviceDoc.paths);
+          for (const [path, def] of Object.entries(serviceDoc.paths)) {
+            const prefixedPath = `/${service.name}${path}`;
+            aggregatedDoc.paths[prefixedPath] = def;
+          }
         }
 
+        // Merge schemas
         if (serviceDoc.components?.schemas) {
           Object.assign(
             aggregatedDoc.components.schemas,
@@ -67,14 +86,19 @@ export class SwaggerAggregatorService {
           );
         }
 
+        // Merge tags
         if (serviceDoc.tags) {
           aggregatedDoc.tags.push(...serviceDoc.tags);
         }
-      } catch (error) {
+      } catch (error: any) {
         // Silently skip unavailable services
         continue;
       }
     }
+
+    // Update cache
+    this.cachedDocs = aggregatedDoc;
+    this.cacheTimestamp = now;
 
     return aggregatedDoc;
   }

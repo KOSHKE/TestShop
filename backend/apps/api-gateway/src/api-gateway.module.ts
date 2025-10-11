@@ -10,8 +10,8 @@ import {
 } from '@app/shared';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
-import { ProxyService } from './proxy.service';
-import { SwaggerAggregatorService } from './swagger-aggregator.service';
+import { ProxyModule } from './proxy/proxy.module';
+import { SwaggerModule } from './swagger/swagger.module';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 
@@ -36,14 +36,15 @@ import { validationSchema } from './config/validation.schema';
     ]),
     // Prometheus Metrics
     PrometheusMetricsModule,
-    // Proxy Modules
+    // Business Modules
     AuthModule,
     UsersModule,
     ProductsModule,
+    // Infrastructure Modules
+    ProxyModule,
+    SwaggerModule,
   ],
   providers: [
-    ProxyService,
-    SwaggerAggregatorService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
@@ -57,6 +58,5 @@ import { validationSchema } from './config/validation.schema';
       useClass: GlobalExceptionFilter,
     },
   ],
-  exports: [SwaggerAggregatorService],
 })
 export class ApiGatewayModule {}

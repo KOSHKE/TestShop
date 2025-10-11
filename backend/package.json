@@ -30,6 +30,7 @@
     "db:setup": "npm run prisma:migrate:user && npm run prisma:migrate:inventory && npm run prisma:seed:inventory"
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -40,6 +41,7 @@
     "@nestjs/throttler": "^6.3.1",
     "@prisma/client": "^6.16.3",
     "@willsoto/nestjs-prometheus": "^6.0.2",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",

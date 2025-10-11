@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from '@app/shared';
-import { ProxyService } from '../proxy.service';
+import { ProxyService } from '../proxy/proxy.service';
 
 /**
  * AuthController (API Gateway)
@@ -19,7 +19,7 @@ export class AuthController {
     description: 'User successfully registered',
   })
   async register(@Body() dto: CreateUserDto) {
-    return this.proxyService.proxyRequest('users', 'auth/register', 'POST', dto);
+    return this.proxyService.forwardRequest('users', 'auth/register', 'POST', dto);
   }
 
   @Post('login')
@@ -33,7 +33,7 @@ export class AuthController {
     description: 'Invalid credentials',
   })
   async login(@Body() dto: { email: string; password: string }) {
-    return this.proxyService.proxyRequest('users', 'auth/login', 'POST', dto);
+    return this.proxyService.forwardRequest('users', 'auth/login', 'POST', dto);
   }
 
   @Post('logout')
@@ -43,7 +43,7 @@ export class AuthController {
     description: 'Logout successful',
   })
   async logout() {
-    return this.proxyService.proxyRequest('users', 'auth/logout', 'POST', {});
+    return this.proxyService.forwardRequest('users', 'auth/logout', 'POST', {});
   }
 }
 
