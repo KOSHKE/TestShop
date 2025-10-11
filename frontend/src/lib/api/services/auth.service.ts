@@ -23,7 +23,8 @@ export interface AuthResponse {
 
 /**
  * Auth Service
- * Handles authentication API calls
+ * Handles authentication API calls (login, register)
+ * Note: Logout is handled client-side (JWT token removal)
  */
 export class AuthService extends BaseApiClient {
   /**
@@ -38,13 +39,6 @@ export class AuthService extends BaseApiClient {
    */
   async register(data: RegisterRequest): Promise<AuthResponse> {
     return this.post<AuthResponse>('/auth/register', data);
-  }
-
-  /**
-   * Logout user
-   */
-  async logout(): Promise<void> {
-    await this.post<void>('/auth/logout', {});
   }
 }
 

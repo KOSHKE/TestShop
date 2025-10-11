@@ -35,15 +35,5 @@ export class AuthController {
   async login(@Body() dto: { email: string; password: string }) {
     return this.proxyService.forwardRequest('users', 'auth/login', 'POST', dto);
   }
-
-  @Post('logout')
-  @ApiOperation({ summary: 'Logout user' })
-  @ApiResponse({
-    status: 200,
-    description: 'Logout successful',
-  })
-  async logout() {
-    return this.proxyService.forwardRequest('users', 'auth/logout', 'POST', {});
-  }
 }
 

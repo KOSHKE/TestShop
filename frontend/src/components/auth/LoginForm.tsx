@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { api } from '@/lib/api';
+import { useAuth } from '@/contexts/auth.context';
 import Link from 'next/link';
 
 /**
@@ -13,6 +14,7 @@ import Link from 'next/link';
  */
 export function LoginForm() {
   const [serverError, setServerError] = useState<string>('');
+  const { login } = useAuth();
 
   const {
     register,
@@ -28,11 +30,8 @@ export function LoginForm() {
       const { rememberMe, ...loginData } = data;
       const response = await api.auth.login(loginData);
       
-      // Store token
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('user', JSON.stringify(response.user));
-      }
+      // Update auth context
+      login(response.accessToken, response.user);
       
       // Redirect to home
       window.location.href = '/';

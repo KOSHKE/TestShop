@@ -1,11 +1,14 @@
 function getApiBaseUrl(): string {
-  const url = process.env.NEXT_PUBLIC_API_URL;
+  // Check if running on server (SSR) or client (browser)
+  const isServer = typeof window === 'undefined';
   
-  if (!url) {
-    throw new Error('NEXT_PUBLIC_API_URL environment variable is required');
+  if (isServer) {
+    // Server-side (Docker): use internal Docker service name
+    return process.env.API_URL_SERVER || 'http://api-gateway:4000';
+  } else {
+    // Client-side (browser): use localhost
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   }
-  
-  return url;
 }
 
 export class BaseApiClient {

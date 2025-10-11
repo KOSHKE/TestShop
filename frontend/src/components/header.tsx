@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth.context';
 
 export function Header() {
+  const { user, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200/50 dark:border-gray-800/50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,12 +29,26 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              Sign In
-            </Link>
+            {user ? (
+              <>
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {user.name || user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterFormData } from '@/lib/validations/auth';
 import { api } from '@/lib/api';
-import Link from 'next/link';
+import { useAuth } from '@/contexts/auth.context';
 
 /**
  * RegisterForm Component
@@ -13,6 +13,7 @@ import Link from 'next/link';
  */
 export function RegisterForm() {
   const [serverError, setServerError] = useState<string>('');
+  const { login } = useAuth();
 
   const {
     register,
@@ -25,14 +26,11 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setServerError('');
-      const { confirmPassword, agreeToTerms, ...registerData } = data;
+      const { confirmPassword, ...registerData } = data;
       const response = await api.auth.register(registerData);
       
-      // Store token
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('user', JSON.stringify(response.user));
-      }
+      // Update auth context
+      login(response.accessToken, response.user);
       
       // Redirect to home
       window.location.href = '/';
@@ -149,32 +147,6 @@ export function RegisterForm() {
         {errors.confirmPassword && (
           <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">
             {errors.confirmPassword.message}
-          </p>
-        )}
-      </div>
-
-      {/* Terms checkbox */}
-      <div>
-        <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <input
-            {...register('agreeToTerms')}
-            type="checkbox"
-            className="mt-1 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-          />
-          <span>
-            I agree to the{' '}
-            <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
-              Privacy Policy
-            </Link>
-          </span>
-        </label>
-        {errors.agreeToTerms && (
-          <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">
-            {errors.agreeToTerms.message}
           </p>
         )}
       </div>

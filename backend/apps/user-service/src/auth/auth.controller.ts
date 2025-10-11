@@ -8,7 +8,7 @@ import { Public } from './decorators/public.decorator';
 
 /**
  * AuthController
- * Handles authentication endpoints: login, register, logout
+ * Handles authentication endpoints: login, register
  * All endpoints are public (no JWT required)
  */
 @ApiTags('auth')
@@ -41,18 +41,6 @@ export class AuthController {
   })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(dto);
-  }
-
-  @Post('logout')
-  @ApiOperation({ summary: 'Logout user (client-side token removal)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Logout successful',
-  })
-  async logout() {
-    // JWT logout is handled client-side by removing the token
-    // Optionally implement token blacklist for extra security
-    return { message: 'Logout successful' };
   }
 }
 
